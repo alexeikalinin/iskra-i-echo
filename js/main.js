@@ -54,6 +54,13 @@ const PhaserConfig = {
   ],
 };
 
+// ?reset=1 в URL — сброс своего прогресса (удобно для тестирования)
+if (new URLSearchParams(window.location.search).get('reset') === '1') {
+  try { localStorage.removeItem('iskra_echo_v1'); } catch (e) {}
+  // Убираем параметр из URL без перезагрузки
+  history.replaceState({}, '', window.location.pathname);
+}
+
 // Запуск игры
 const game = new Phaser.Game(PhaserConfig);
 
@@ -66,18 +73,12 @@ game.events.once('ready', () => {
   }
 });
 
-// Обновляем масштаб при повороте экрана и изменении размера окна.
-// window.resize уже обрабатывается Phaser, но на iOS иногда нужна дополнительная задержка.
+// iOS Safari: при изменении размера окна (скрытие/показ адресной строки)
+// Phaser не всегда успевает пересчитать масштаб — даём 150 мс задержки
 window.addEventListener('resize', () => {
   if (game && game.scale) {
-    // Небольшая задержка для iOS Safari — браузерная панель успевает скрыться
-    setTimeout(() => game.scale.refresh(), 100);
+    setTimeout(() => game.scale.refresh(), 150);
   }
-});
-
-// iOS Safari: прокручиваем страницу вверх, чтобы скрыть адресную строку
-window.addEventListener('load', () => {
-  setTimeout(() => window.scrollTo(0, 1), 100);
 });
 
 // Регистрация Service Worker (PWA)
