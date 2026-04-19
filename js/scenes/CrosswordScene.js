@@ -519,7 +519,7 @@ class CrosswordScene extends Phaser.Scene {
     // Подсказки
     this._hintBtn = this._makeHintButton(W, companion);
 
-    // Таймер
+    // Таймер (справа, оставляем место для орба — орб перемещён влево)
     this.add.text(W - 12, 10, 'Время', {
       fontFamily: 'Georgia, serif',
       fontSize:   '11px',
@@ -530,7 +530,7 @@ class CrosswordScene extends Phaser.Scene {
       fontSize:   '20px',
       fontStyle:  'bold',
       color:      '#FFF4E0',
-    }).setOrigin(1, 0);
+    }).setOrigin(1, 0).setDepth(6);
 
     // Прогресс (X из N слов)
     this._progressTxt = this.add.text(W / 2, 48, this._progressLabel(), {
@@ -1021,9 +1021,11 @@ class CrosswordScene extends Phaser.Scene {
     // Высота сетки: до ~CW.GRID_TOP + gridH, клавиатура начинается с CW.KBD_TOP
     // Панель подсказок — полоса над клавиатурой
 
-    const panelTop  = CW.KBD_TOP - 120;
-    const panelH    = 110;
-    const pad       = 8;
+    // Высота панели зависит от количества слов (минимум 4 строки)
+    const lineH    = 22;
+    const pad      = 8;
+    const panelH   = pad * 2 + this._words.length * lineH;
+    const panelTop = CW.KBD_TOP - panelH - 8;
 
     // Фон панели
     const panelBg = this.add.graphics().setDepth(4);
@@ -1032,15 +1034,13 @@ class CrosswordScene extends Phaser.Scene {
     panelBg.lineStyle(1, companion.color, 0.12);
     panelBg.strokeRoundedRect(pad, panelTop, W - pad * 2, panelH, 10);
 
-    // Скроллируемый список слов (показываем не более 4 за раз)
     this._cluePanelTop = panelTop;
     this._cluePanelH   = panelH;
     this._clueTexts     = [];
     this._clueContainer = this.add.container(0, 0).setDepth(5);
 
     this._words.forEach((w, i) => {
-      const lineY = panelTop + pad + i * 22;
-      if (lineY + 20 > panelTop + panelH) return; // не влезает
+      const lineY = panelTop + pad + i * lineH;
 
       const numTxt = this.add.text(pad + 8, lineY, `${i + 1}.`, {
         fontFamily: 'Georgia, serif',
@@ -1168,9 +1168,10 @@ class CrosswordScene extends Phaser.Scene {
   // ─── Компаньон в HUD ────────────────────────────────────────────────────────
 
   _buildCompanion(W, companion) {
-    const ORB_SIZE = 50;
-    const orbX = W - 30;
-    const orbY = CW.HUD_H / 2;
+    const ORB_SIZE = 26;
+    // Орб в нижнем правом углу HUD — ниже текста таймера (таймер y=24..48, орб y=65)
+    const orbX = W - 18;
+    const orbY = CW.HUD_H - 15;
 
     // Свечение
     this._orbGlow = this.add.ellipse(orbX, orbY + 10, 58, 22, companion.color, 0.15)
