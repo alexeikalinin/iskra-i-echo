@@ -129,9 +129,13 @@ class HiddenObjectScene extends Phaser.Scene {
   /** Показывает обучающий экран перед началом игры */
   _showTutorial(W, H) {
     const companion = COMPANIONS[this._companionId];
+    // Все объекты туториала — для уничтожения одним вызовом
+    const tutObjects = [];
+
+    const track = (obj) => { tutObjects.push(obj); return obj; };
 
     // Затемняющий оверлей
-    const overlay = this.add.graphics().setDepth(200);
+    const overlay = track(this.add.graphics().setDepth(200));
     overlay.fillStyle(0x050210, 0.88);
     overlay.fillRect(0, 0, W, H);
 
@@ -141,7 +145,7 @@ class HiddenObjectScene extends Phaser.Scene {
     const cardW = W - 40;
     const cardH = 340;
 
-    const card = this.add.graphics().setDepth(201);
+    const card = track(this.add.graphics().setDepth(201));
     card.fillStyle(0x110830, 1);
     card.fillRoundedRect(cardX - cardW / 2, cardY - cardH / 2, cardW, cardH, 18);
     card.lineStyle(1.5, companion.color, 0.6);
@@ -150,17 +154,17 @@ class HiddenObjectScene extends Phaser.Scene {
     const textStyle = { fontFamily: 'Georgia, serif', color: '#FFF4E0', align: 'center' };
 
     // Заголовок
-    this.add.text(cardX, cardY - cardH / 2 + 24, '✦  Найди предметы  ✦', {
+    track(this.add.text(cardX, cardY - cardH / 2 + 24, '✦  Найди предметы  ✦', {
       ...textStyle, fontSize: '18px', fontStyle: 'bold',
-    }).setOrigin(0.5, 0).setDepth(202);
+    }).setOrigin(0.5, 0).setDepth(202));
 
     // Разделитель
-    const div = this.add.graphics().setDepth(202);
+    const div = track(this.add.graphics().setDepth(202));
     div.lineStyle(1, companion.color, 0.3);
     div.lineBetween(cardX - cardW / 2 + 20, cardY - cardH / 2 + 56,
                     cardX + cardW / 2 - 20, cardY - cardH / 2 + 56);
 
-    // Инструкция
+    // Инструкции
     const instrY = cardY - cardH / 2 + 72;
     const instructions = [
       { icon: '👁', text: 'Посмотри на список предметов внизу экрана' },
@@ -171,53 +175,56 @@ class HiddenObjectScene extends Phaser.Scene {
 
     instructions.forEach((instr, i) => {
       const y = instrY + i * 48;
-      // Иконка
-      this.add.text(cardX - cardW / 2 + 22, y + 14, instr.icon, {
+      track(this.add.text(cardX - cardW / 2 + 22, y + 14, instr.icon, {
         fontFamily: 'Arial', fontSize: '20px',
-      }).setOrigin(0, 0.5).setDepth(202);
-      // Текст
-      this.add.text(cardX - cardW / 2 + 54, y + 14, instr.text, {
+      }).setOrigin(0, 0.5).setDepth(202));
+      track(this.add.text(cardX - cardW / 2 + 54, y + 14, instr.text, {
         ...textStyle, fontSize: '13px', wordWrap: { width: cardW - 70 },
-      }).setOrigin(0, 0.5).setDepth(202);
+      }).setOrigin(0, 0.5).setDepth(202));
     });
 
     // Кнопка «Начать»
     const btnY  = cardY + cardH / 2 - 34;
-    const btnW  = 160;
-    const btnH  = 44;
-    const btnBg = this.add.graphics().setDepth(202);
+    const btnW  = 180;
+    const btnH  = 52;
+    const btnBg = track(this.add.graphics().setDepth(202));
     btnBg.fillStyle(companion.color, 0.9);
     btnBg.fillRoundedRect(cardX - btnW / 2, btnY - btnH / 2, btnW, btnH, 14);
 
-    const btnTxt = this.add.text(cardX, btnY, 'Начать игру', {
-      fontFamily: 'Georgia, serif', fontSize: '16px', fontStyle: 'bold',
+    const btnTxt = track(this.add.text(cardX, btnY, 'Начать игру', {
+      fontFamily: 'Georgia, serif', fontSize: '18px', fontStyle: 'bold',
       color: '#FFFFFF',
-    }).setOrigin(0.5).setDepth(203);
+    }).setOrigin(0.5).setDepth(203));
 
     // Пульсация кнопки
-    this.tweens.add({
+    const pulseTween = this.tweens.add({
       targets:  [btnBg, btnTxt],
-      alpha:    { from: 0.85, to: 1 },
+      alpha:    { from: 0.8, to: 1 },
       duration: 900,
       yoyo:     true,
       repeat:   -1,
       ease:     'Sine.easeInOut',
     });
 
-    // Интерактивная зона кнопки
-    const btnZone = this.add.zone(cardX, btnY, btnW, btnH)
-      .setInteractive({ useHandCursor: true }).setDepth(204);
+    // Зона нажатия (увеличена для удобства на мобильном)
+    const btnZone = track(this.add.zone(cardX, btnY, btnW + 20, btnH + 20)
+      .setInteractive().setDepth(204));
 
+    let started = false;
     const startGame = () => {
+      if (started) return;
+      started = true;
+
+      // Сначала останавливаем пульсацию, потом запускаем fade
+      pulseTween.stop();
       btnZone.removeInteractive();
+
       this.tweens.add({
-        targets:  [overlay, card, div, btnBg, btnTxt, btnZone],
+        targets:  tutObjects,
         alpha:    0,
         duration: 300,
         onComplete: () => {
-          [overlay, card, div, btnBg, btnTxt, btnZone].forEach(o => o.destroy());
-          // Уничтожаем текстовые объекты туториала (они не в массиве)
-          // Запускаем таймер и подсказку
+          tutObjects.forEach(o => { if (o && o.destroy) o.destroy(); });
           this._timerEvent = this.time.addEvent({
             delay:         1000,
             callback:      this._onTick,
@@ -228,13 +235,9 @@ class HiddenObjectScene extends Phaser.Scene {
           this._timerStarted = true;
         },
       });
-      // Анимируем остальные UI-объекты туториала
-      this.tweens.killTweensOf([btnBg, btnTxt]);
     };
 
     btnZone.on('pointerdown', startGame);
-    btnZone.on('pointerover',  () => { btnBg.setAlpha(1.0); });
-    btnZone.on('pointerout',   () => { btnBg.setAlpha(0.9); });
   }
 
   // ─── Построение игровой сцены ───────────────────────────────────────────────
