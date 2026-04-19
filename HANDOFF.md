@@ -260,3 +260,28 @@ MainMenu → CompanionSelect → ChapterScene → PlaceholderMG → ChapterScene
 ### [2026-04-19 14:54] Автозапись конца сессии
 **Изменённые JS файлы:** js/scenes/MainMenuScene.js,js/scenes/PlaceholderMiniGameScene.js,js/scenes/BootScene.js,js/scenes/BubbleShooterScene.js,js/scenes/SpotDiffScene.js,js/scenes/ChapterScene.js,js/scenes/MazeScene.js,js/scenes/MemoryPairsScene.js,js/scenes/CompanionSelectScene.js,js/scenes/HiddenObjectScene.js,js/scenes/CrosswordScene.js,js/scenes/Match3Scene.js,js/scenes/ShopScene.js,js/scenes/SlidingPuzzleScene.js,js/managers/DialogueManager.js,js/managers/GameState.js,js/managers/Analytics.js,js/config.js,js/main.js,js/data/dialogues.js
 **Следующий шаг:** см. последнюю запись выше или раздел "Этап 7" в IDEAS.md
+
+---
+### [2026-04-19 14:57] Автозапись конца сессии
+**Изменённые JS файлы:** js/scenes/MainMenuScene.js,js/scenes/PlaceholderMiniGameScene.js,js/scenes/BootScene.js,js/scenes/BubbleShooterScene.js,js/scenes/SpotDiffScene.js,js/scenes/ChapterScene.js,js/scenes/MazeScene.js,js/scenes/MemoryPairsScene.js,js/scenes/CompanionSelectScene.js,js/scenes/HiddenObjectScene.js,js/scenes/CrosswordScene.js,js/scenes/Match3Scene.js,js/scenes/ShopScene.js,js/scenes/SlidingPuzzleScene.js,js/managers/DialogueManager.js,js/managers/GameState.js,js/managers/Analytics.js,js/config.js,js/main.js,js/data/dialogues.js
+**Следующий шаг:** см. последнюю запись выше или раздел "Этап 7" в IDEAS.md
+
+---
+### [2026-04-19 15:07] Автозапись конца сессии
+**Изменённые JS файлы:** js/scenes/MainMenuScene.js,js/scenes/PlaceholderMiniGameScene.js,js/scenes/BootScene.js,js/scenes/BubbleShooterScene.js,js/scenes/SpotDiffScene.js,js/scenes/ChapterScene.js,js/scenes/MazeScene.js,js/scenes/MemoryPairsScene.js,js/scenes/CompanionSelectScene.js,js/scenes/HiddenObjectScene.js,js/scenes/CrosswordScene.js,js/scenes/Match3Scene.js,js/scenes/ShopScene.js,js/scenes/SlidingPuzzleScene.js,js/managers/DialogueManager.js,js/managers/GameState.js,js/managers/Analytics.js,js/config.js,js/main.js,js/data/dialogues.js
+**Следующий шаг:** см. последнюю запись выше или раздел "Этап 7" в IDEAS.md
+
+---
+### [2026-04-19 15:56] Автозапись конца сессии
+**Изменённые JS файлы:** js/scenes/MainMenuScene.js,js/scenes/PlaceholderMiniGameScene.js,js/scenes/BootScene.js,js/scenes/BubbleShooterScene.js,js/scenes/SpotDiffScene.js,js/scenes/ChapterScene.js,js/scenes/MazeScene.js,js/scenes/MemoryPairsScene.js,js/scenes/CompanionSelectScene.js,js/scenes/HiddenObjectScene.js,js/scenes/CrosswordScene.js,js/scenes/Match3Scene.js,js/scenes/ShopScene.js,js/scenes/SlidingPuzzleScene.js,js/managers/DialogueManager.js,js/managers/GameState.js,js/managers/Analytics.js,js/config.js,js/main.js,js/data/dialogues.js
+**Следующий шаг:** см. последнюю запись выше или раздел "Этап 7" в IDEAS.md
+
+---
+### [2026-04-19 16:04] Автозапись конца сессии
+**Изменённые JS файлы:** js/scenes/MainMenuScene.js,js/scenes/PlaceholderMiniGameScene.js,js/scenes/BootScene.js,js/scenes/BubbleShooterScene.js,js/scenes/SpotDiffScene.js,js/scenes/ChapterScene.js,js/scenes/MazeScene.js,js/scenes/MemoryPairsScene.js,js/scenes/CompanionSelectScene.js,js/scenes/HiddenObjectScene.js,js/scenes/CrosswordScene.js,js/scenes/Match3Scene.js,js/scenes/ShopScene.js,js/scenes/SlidingPuzzleScene.js,js/managers/DialogueManager.js,js/managers/GameState.js,js/managers/Analytics.js,js/config.js,js/main.js,js/data/dialogues.js
+**Следующий шаг:** см. последнюю запись выше или раздел "Этап 7" в IDEAS.md
+
+---
+### [2026-04-19 16:26] Автозапись конца сессии
+**Изменённые JS файлы:** js/scenes/MainMenuScene.js,js/scenes/PlaceholderMiniGameScene.js,js/scenes/BootScene.js,js/scenes/BubbleShooterScene.js,js/scenes/SpotDiffScene.js,js/scenes/ChapterScene.js,js/scenes/MazeScene.js,js/scenes/MemoryPairsScene.js,js/scenes/CompanionSelectScene.js,js/scenes/HiddenObjectScene.js,js/scenes/CrosswordScene.js,js/scenes/Match3Scene.js,js/scenes/ShopScene.js,js/scenes/SlidingPuzzleScene.js,js/managers/DialogueManager.js,js/managers/GameState.js,js/managers/Analytics.js,js/config.js,js/main.js,js/data/dialogues.js
+**Следующий шаг:** см. последнюю запись выше или раздел "Этап 7" в IDEAS.md

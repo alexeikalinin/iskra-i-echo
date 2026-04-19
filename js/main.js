@@ -13,13 +13,17 @@ const PhaserConfig = {
   type:            Phaser.AUTO,    // WebGL → Canvas fallback
   backgroundColor: '#1A0F2E',
 
-  // Адаптивный масштаб — игровое поле 390×844, растягивается на весь экран
+  // Адаптивный масштаб:
+  // FIT — сохраняет пропорции 390×844 и растягивает на весь контейнер.
+  // На телефонах с другим соотношением сторон добавляются тонкие полосы фона.
   scale: {
-    mode:       Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width:      GAME_CONFIG.WIDTH,
-    height:     GAME_CONFIG.HEIGHT,
-    parent:     'game-container',
+    mode:            Phaser.Scale.FIT,
+    autoCenter:      Phaser.Scale.CENTER_BOTH,
+    width:           GAME_CONFIG.WIDTH,   // 390 — внутренняя ширина игры
+    height:          GAME_CONFIG.HEIGHT,  // 844 — внутренняя высота игры
+    parent:          'game-container',
+    // Обновлять размер при повороте экрана и изменении окна браузера
+    expandParent:    false,
   },
 
   // Физика не нужна для puzzle-игры (включается только в нужных сценах)
@@ -60,6 +64,20 @@ game.events.once('ready', () => {
     splash.style.opacity = '0';
     setTimeout(() => splash.remove(), 600);
   }
+});
+
+// Обновляем масштаб при повороте экрана и изменении размера окна.
+// window.resize уже обрабатывается Phaser, но на iOS иногда нужна дополнительная задержка.
+window.addEventListener('resize', () => {
+  if (game && game.scale) {
+    // Небольшая задержка для iOS Safari — браузерная панель успевает скрыться
+    setTimeout(() => game.scale.refresh(), 100);
+  }
+});
+
+// iOS Safari: прокручиваем страницу вверх, чтобы скрыть адресную строку
+window.addEventListener('load', () => {
+  setTimeout(() => window.scrollTo(0, 1), 100);
 });
 
 // Регистрация Service Worker (PWA)

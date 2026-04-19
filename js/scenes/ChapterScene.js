@@ -39,6 +39,9 @@ class ChapterScene extends Phaser.Scene {
     // Результат последней мини-игры (если вернулись из неё)
     this._miniResult  = data.miniGameResult  || null;
     this._returnedIdx = data.miniGameIndex   !== undefined ? data.miniGameIndex : null;
+
+    // Флаг возобновления сохранённого прогресса (из MainMenu → Продолжить)
+    this._resuming    = data.resuming || false;
   }
 
   // ─── Создание сцены ───────────────────────────────────────────────────────
@@ -68,14 +71,21 @@ class ChapterScene extends Phaser.Scene {
 
     this.cameras.main.fadeIn(ANIM.FADE_IN, 10, 6, 30);
 
-    // Определить состояние: первый запуск или возврат из мини-игры
+    // Определить состояние: возврат из мини-игры / продолжение / первый запуск
     if (this._miniResult !== null && this._returnedIdx !== null) {
-      // Задержка чтобы fadeIn успел запуститься
+      // Возврат из мини-игры с результатом
       this.time.delayedCall(ANIM.FADE_IN + 100, () => {
         this._handleMiniGameReturn(this._returnedIdx, this._miniResult);
       });
+    } else if (this._resuming && this._currentMGIdx > 0) {
+      // Продолжение сохранённой игры: глава уже частично пройдена
+      this._updateProgressDots(this._currentMGIdx);
+      this.time.delayedCall(ANIM.FADE_IN + 100, () => {
+        // Показываем кнопку продолжения с нужной мини-игрой
+        this._showActionButton('Продолжить ›', () => this._launchNextMiniGame());
+      });
     } else {
-      // Первый запуск — сбросить текущую мини-игру
+      // Первый запуск главы — сбросить текущую мини-игру
       GameState.set('story.currentMiniGame', 0);
       this._currentMGIdx = 0;
       this._updateProgressDots(0);
@@ -381,6 +391,10 @@ class ChapterScene extends Phaser.Scene {
     btn.on('pointerout',  () => btn.setColor('#6A5A7A'));
     btn.on('pointerup',   () => {
       DialogueManager.hide();
+      // Сохраняем текущий прогресс (глава + индекс мини-игры) перед выходом в меню
+      GameState.set('story.currentChapter',  this._chapterNum);
+      GameState.set('story.currentMiniGame', this._currentMGIdx);
+      GameState.save();
       this.cameras.main.fadeOut(ANIM.FADE_OUT, 10, 6, 30);
       this.time.delayedCall(ANIM.FADE_OUT + 50, () => {
         this.scene.start(GAME_CONFIG.SCENES.MAIN_MENU);
@@ -411,6 +425,9 @@ class ChapterScene extends Phaser.Scene {
     // Добавить привязанность
     const bondGain = result.stars ? result.stars * 8 : 5;
     GameState.addBond(this._companionId, bondGain);
+
+    // Сохранить прогресс сразу после прохождения мини-игры
+    GameState.save();
 
     // Сдвинуть текущий индекс вперёд
     const nextIdx = miniGameIndex + 1;
@@ -636,7 +653,13 @@ class ChapterScene extends Phaser.Scene {
   _launchNextMiniGame() {
     const idx     = this._currentMGIdx;
     const mgKey   = this._miniGameChain[idx];
-    if (!mgKey) return;
+
+    if (!mgKey) {
+      // Цепочка пуста или индекс вышел за границу — глава считается завершённой
+      console.warn(`[ChapterScene] Нет мини-игры по индексу ${idx} в главе ${this._chapterNum}, завершаем главу`);
+      this._playChapterComplete();
+      return;
+    }
 
     this._hideActionButton();
     DialogueManager.hide();
@@ -662,11 +685,6 @@ class ChapterScene extends Phaser.Scene {
     };
 
     this._floatTween?.stop();
-
-    // Показываем диагностическую надпись поверх фэйда (исчезнет со сценой)
-    this.add.text(this._W / 2, this._H / 2, 'Запуск: ' + (sceneKey || 'PLACEHOLDER'), {
-      fontFamily: 'Arial', fontSize: '16px', color: '#ffff00',
-    }).setOrigin(0.5).setDepth(9999);
 
     this.cameras.main.fadeOut(ANIM.FADE_OUT, 10, 6, 30);
 

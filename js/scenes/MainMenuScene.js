@@ -246,11 +246,28 @@ class MainMenuScene extends Phaser.Scene {
   }
 
   _continueGame() {
-    // TODO Этап 7: переход в ChapterScene с текущей главой
-    const chapter = GameState.get('story.currentChapter');
-    console.log('[MainMenu] Продолжаем с главы', chapter);
-    // Пока — тот же экран выбора если компаньон не выбран
-    this._goToCompanionSelect();
+    const chapter     = GameState.get('story.currentChapter') || 1;
+    const miniGame    = GameState.get('story.currentMiniGame') || 0;
+    const hasCompanion = !!GameState.get('firstCompanion');
+
+    console.log('[MainMenu] Продолжаем с главы', chapter, 'мини-игра', miniGame);
+
+    this.cameras.main.fadeOut(ANIM.FADE_OUT, 26, 15, 46);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      if (!hasCompanion) {
+        // Компаньон ещё не выбран — отправить на экран выбора
+        this.scene.start(GAME_CONFIG.SCENES.COMPANION_SELECT);
+      } else {
+        // Восстановить главу и мини-игру из сохранения
+        this.scene.start(GAME_CONFIG.SCENES.CHAPTER, {
+          chapter:       chapter,
+          miniGameIndex: miniGame > 0 ? miniGame - 1 : undefined,
+          // Если мини-игра уже была начата, восстанавливаем без результата
+          // (повторное прохождение с текущей позиции)
+          resuming:      true,
+        });
+      }
+    });
   }
 
   _confirmNewGame() {

@@ -316,10 +316,24 @@ const SHOP_CATALOG = [
 // Используется ChapterScene для запуска нужных мини-игр в правильном порядке
 
 const CHAPTER_MINI_GAMES = {
+  // Акт I — «Пробуждение» (главы 1-5, сложность easy)
   1:  ['match3', 'hidden_object', 'memory_pairs', 'match3'],
   2:  ['maze', 'spot_diff', 'match3', 'bubble'],
   3:  ['memory_pairs', 'crossword', 'sliding', 'match3'],
   4:  ['hidden_object', 'maze', 'bubble', 'memory_pairs'],
   5:  ['match3', 'crossword', 'spot_diff', 'sliding', 'match3'],
-  // Главы 6-15 будут заполнены при разработке соответствующих этапов
+
+  // Акт II — «Поиск» (главы 6-10, сложность normal)
+  6:  ['bubble', 'hidden_object', 'match3', 'crossword'],
+  7:  ['sliding', 'maze', 'memory_pairs', 'spot_diff', 'match3'],
+  8:  ['match3', 'bubble', 'crossword', 'hidden_object'],
+  9:  ['memory_pairs', 'sliding', 'match3', 'maze', 'spot_diff'],
+  10: ['crossword', 'match3', 'bubble', 'memory_pairs', 'sliding'],
+
+  // Акт III — «Возвращение» (главы 11-15, сложность hard)
+  11: ['hidden_object', 'match3', 'maze', 'crossword', 'memory_pairs'],
+  12: ['spot_diff', 'sliding', 'bubble', 'match3', 'hidden_object'],
+  13: ['match3', 'memory_pairs', 'crossword', 'sliding', 'bubble'],
+  14: ['maze', 'spot_diff', 'match3', 'hidden_object', 'memory_pairs'],
+  15: ['crossword', 'bubble', 'sliding', 'match3', 'spot_diff', 'match3'],
 };

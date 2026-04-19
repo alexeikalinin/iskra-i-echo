@@ -456,6 +456,21 @@ class CrosswordScene extends Phaser.Scene {
 
   // ─── Построение логической сетки ────────────────────────────────────────────
 
+  /** Возвращает букву решённого слова в клетке (row,col), или '' если нет */
+  _getSolvedLetterAt(row, col) {
+    const key = `${row}_${col}`;
+    const wordIndices = this._cellToWords[key];
+    if (!wordIndices) return '';
+    for (const wIdx of wordIndices) {
+      const ow = this._words[wIdx];
+      if (ow.solved) {
+        const pos = this._cellPositionInWord(wIdx, row, col);
+        if (pos >= 0) return ow.word[pos];
+      }
+    }
+    return '';
+  }
+
   _buildGrid() {
     // Заполняем словарь cellToWords
     this._words.forEach((wordDef, wIdx) => {
@@ -750,6 +765,25 @@ class CrosswordScene extends Phaser.Scene {
     }
   }
 
+  // ─── Синхронизация буквы во всех словах-пересечениях ───────────────────────
+
+  /**
+   * Устанавливает letter во всех незавершённых словах, проходящих через (row, col).
+   * Вызывается при вводе буквы и при подсказке — чтобы пересекающееся слово
+   * не требовало повторного ввода уже видимой буквы.
+   */
+  _propagateLetter(row, col, letter) {
+    const key = `${row}_${col}`;
+    const wordIndices = this._cellToWords[key];
+    if (!wordIndices) return;
+    wordIndices.forEach(wIdx => {
+      const ow = this._words[wIdx];
+      if (ow.solved) return;
+      const pos = this._cellPositionInWord(wIdx, row, col);
+      if (pos >= 0) ow.letters[pos] = letter;
+    });
+  }
+
   // ─── Нажатие клавиши ────────────────────────────────────────────────────────
 
   _onKeyPress(letter) {
@@ -762,14 +796,15 @@ class CrosswordScene extends Phaser.Scene {
     const { row, col } = this._selectedCell;
 
     if (letter === '←') {
-      // Backspace — стираем букву в текущей ячейке
-      // Определяем позицию в слове
+      // Backspace — стираем букву в текущей ячейке только для текущего слова
       const pos = this._cellPositionInWord(this._selectedWord, row, col);
       if (pos >= 0) {
         w.letters[pos] = '';
         const key = `${row}_${col}`;
+        // Показываем букву пересекающего решённого слова (если есть), иначе пусто
+        const displayLetter = this._getSolvedLetterAt(row, col);
         if (this._cellObjects[key]) {
-          this._cellObjects[key].txt.setText('');
+          this._cellObjects[key].txt.setText(displayLetter);
         }
         // Двигаем курсор назад
         if (pos > 0) {
@@ -786,7 +821,8 @@ class CrosswordScene extends Phaser.Scene {
     const pos = this._cellPositionInWord(this._selectedWord, row, col);
     if (pos < 0 || pos >= w.word.length) return;
 
-    w.letters[pos] = letter;
+    // Синхронизируем со всеми словами на этой клетке
+    this._propagateLetter(row, col, letter);
     const key = `${row}_${col}`;
     if (this._cellObjects[key]) {
       this._cellObjects[key].txt.setText(letter);
@@ -861,6 +897,13 @@ class CrosswordScene extends Phaser.Scene {
 
       // Анимация победы слова
       this._animateWordSolved(wordIdx, companion);
+
+      // Пропагируем буквы решённого слова в пересекающиеся незавершённые слова
+      for (let i = 0; i < w.word.length; i++) {
+        const r = w.dir === 'H' ? w.row : w.row + i;
+        const c = w.dir === 'H' ? w.col + i : w.col;
+        this._propagateLetter(r, c, w.word[i]);
+      }
 
       // Обновляем панель подсказок
       this._updateCluePanel();
@@ -978,12 +1021,12 @@ class CrosswordScene extends Phaser.Scene {
       return;
     }
 
-    // Раскрываем букву
+    // Раскрываем букву и пропагируем в пересечения
     const w = this._words[targetWord];
-    w.letters[targetPos] = w.word[targetPos];
-
     const r = w.dir === 'H' ? w.row       : w.row + targetPos;
     const c = w.dir === 'H' ? w.col + targetPos : w.col;
+    this._propagateLetter(r, c, w.word[targetPos]);
+
     const key = `${r}_${c}`;
     if (this._cellObjects[key]) {
       this._cellObjects[key].txt.setText(w.word[targetPos]).setColor('#' + COMPANIONS[this._companionId].colorLight.toString(16).padStart(6, '0'));
