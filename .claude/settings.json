@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "Agent(*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/alexei.kalinin/Documents/VibeCoding/Iskra-i-Echo/.claude/hooks/handoff-logger.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

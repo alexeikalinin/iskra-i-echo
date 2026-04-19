@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Мобильный viewport: portrait, без зума -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <!-- PWA и iOS -->
+  <meta name="theme-color" content="#1A0F2E">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Искра и Эхо">
+
+  <!-- SEO / Share -->
+  <meta name="description" content="Cozy puzzle-игра о дружбе трёх древних существ — Светли, Духа и Тени.">
+  <meta property="og:title"       content="Искра и Эхо">
+  <meta property="og:description" content="Cozy puzzle-игра в стиле Studio Ghibli">
+  <meta property="og:image"       content="icons/icon-512.png">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+  <title>Искра и Эхо</title>
+
+  <style>
+    /* ── Базовый сброс ── */
+    *, *::before, *::after {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #0D0820;  /* Тёмный фон за контейнером игры */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ── Контейнер игры ── */
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 430px;  /* Максимум — ширина крупного телефона */
+    }
+
+    /* Phaser создаёт canvas внутри контейнера */
+    #game-container canvas {
+      display: block;
+      outline: none;
+    }
+
+    /* ── HTML-сплэш (виден до инициализации Phaser) ── */
+    #splash {
+      position: absolute;
+      inset: 0;
+      background: #1A0F2E;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    #splash-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      font-style: italic;
+      color: #FFD166;
+      letter-spacing: 3px;
+      text-align: center;
+      text-shadow: 0 0 20px rgba(255, 209, 102, 0.5);
+    }
+
+    #splash-subtitle {
+      margin-top: 10px;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      color: #A8C5DA;
+      letter-spacing: 2px;
+    }
+
+    #splash-dots {
+      margin-top: 36px;
+      display: flex;
+      gap: 10px;
+    }
+
+    #splash-dots span {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      animation: dot-pulse 1.4s ease-in-out infinite;
+    }
+    #splash-dots span:nth-child(1) { background: #FFD166; animation-delay: 0s;    }
+    #splash-dots span:nth-child(2) { background: #A8C5DA; animation-delay: 0.22s; }
+    #splash-dots span:nth-child(3) { background: #7B5EA7; animation-delay: 0.44s; }
+
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 0.25; transform: scale(0.75); }
+      50%       { opacity: 1.00; transform: scale(1.20); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- HTML-сплэш — пока Phaser не готов -->
+  <div id="splash">
+    <div id="splash-title">Искра и Эхо</div>
+    <div id="splash-subtitle">Загрузка…</div>
+    <div id="splash-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Phaser 3 (CDN) ── -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+
+<!-- ── Конфигурация (должна быть первой из игровых файлов) ── -->
+<script src="js/config.js"></script>
+
+<!-- ── Утилиты ── -->
+<script src="js/utils/SaveManager.js"></script>
+
+<!-- ── Менеджеры ── -->
+<script src="js/managers/Analytics.js"></script>
+<script src="js/managers/GameState.js"></script>
+<script src="js/managers/DialogueManager.js"></script>
+
+<!-- ── Данные ── -->
+<script src="js/data/dialogues.js"></script>
+
+<!-- ── Сцены (порядок важен: BootScene первая) ── -->
+<script src="js/scenes/BootScene.js"></script>
+<script src="js/scenes/PreloadScene.js"></script>
+<script src="js/scenes/MainMenuScene.js"></script>
+<script src="js/scenes/ShopScene.js"></script>
+<script src="js/scenes/CompanionSelectScene.js"></script>
+<!-- Этап 7 -->
+<script src="js/scenes/ChapterScene.js"></script>
+<script src="js/scenes/PlaceholderMiniGameScene.js"></script>
+<!-- Этап 8: мини-игры -->
+<script src="js/scenes/Match3Scene.js"></script>
+<script src="js/scenes/MemoryPairsScene.js"></script>
+<script src="js/scenes/MazeScene.js"></script>
+<script src="js/scenes/SlidingPuzzleScene.js"></script>
+<script src="js/scenes/SpotDiffScene.js"></script>
+<script src="js/scenes/HiddenObjectScene.js"></script>
+<script src="js/scenes/CrosswordScene.js"></script>
+<script src="js/scenes/BubbleShooterScene.js"></script>
+
+<!-- ── Точка входа (последний файл — использует всё выше) ── -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+  generate-icons.html — Вспомогательная утилита для генерации PNG-иконок PWA.
+
+  Как использовать:
+    1. Открой этот файл в браузере (file:// или локальный сервер)
+    2. Нажми "Скачать 192" и "Скачать 512"
+    3. Положи скачанные файлы в папку icons/
+    4. Удали этот файл перед деплоем
+
+  После появления финальных ассетов замени иконки на настоящие.
+-->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Генератор иконок — Искра и Эхо</title>
+  <style>
+    body { background: #1A0F2E; display: flex; flex-direction: column;
+           align-items: center; padding: 40px; gap: 20px; font-family: Georgia, serif; color: #FFF; }
+    canvas { border-radius: 24px; }
+    button { padding: 12px 28px; background: #FF9B4E; border: none; border-radius: 24px;
+             color: #FFF; font-size: 16px; cursor: pointer; font-family: inherit; }
+  </style>
+</head>
+<body>
+<h2 style="color:#FFD166">Иконки «Искра и Эхо»</h2>
+<canvas id="c192" width="192" height="192"></canvas>
+<button onclick="download('c192','icon-192.png')">Скачать icon-192.png</button>
+<canvas id="c512" width="512" height="512"></canvas>
+<button onclick="download('c512','icon-512.png')">Скачать icon-512.png</button>
+
+<script>
+function drawIcon(canvas) {
+  const S   = canvas.width;
+  const ctx = canvas.getContext('2d');
+  const C   = S / 2;
+
+  // Фон
+  const bgGrad = ctx.createRadialGradient(C, C * 0.8, 0, C, C, C);
+  bgGrad.addColorStop(0, '#2D1B4E');
+  bgGrad.addColorStop(1, '#1A0F2E');
+  ctx.fillStyle = bgGrad;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, S, S, S * 0.22);
+  ctx.fill();
+
+  // Внешнее свечение шара
+  const glowGrad = ctx.createRadialGradient(C, C, S * 0.15, C, C, S * 0.42);
+  glowGrad.addColorStop(0, 'rgba(255,228,150,0.4)');
+  glowGrad.addColorStop(1, 'rgba(255,209,102,0)');
+  ctx.fillStyle = glowGrad;
+  ctx.fillRect(0, 0, S, S);
+
+  // Основной шар
+  const orbGrad = ctx.createRadialGradient(C * 0.72, C * 0.65, 0, C, C, S * 0.30);
+  orbGrad.addColorStop(0.0, '#FFFFF0');
+  orbGrad.addColorStop(0.3, '#FFD166');
+  orbGrad.addColorStop(0.8, '#E8A020');
+  orbGrad.addColorStop(1.0, '#C87010AA');
+  ctx.fillStyle = orbGrad;
+  ctx.beginPath();
+  ctx.arc(C, C, S * 0.30, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Блик
+  const hlGrad = ctx.createRadialGradient(C * 0.70, C * 0.62, 0, C * 0.70, C * 0.62, S * 0.11);
+  hlGrad.addColorStop(0, 'rgba(255,255,255,0.90)');
+  hlGrad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = hlGrad;
+  ctx.beginPath();
+  ctx.arc(C * 0.70, C * 0.62, S * 0.11, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Искры
+  ctx.fillStyle = '#FFE566';
+  const sparks = [[C + S*0.28, C - S*0.28], [C - S*0.32, C - S*0.22], [C + S*0.20, C + S*0.28]];
+  sparks.forEach(([x, y]) => {
+    const sz = S * 0.025;
+    ctx.beginPath();
+    ctx.moveTo(x, y - sz * 2); ctx.lineTo(x + sz * 0.5, y - sz * 0.5);
+    ctx.lineTo(x + sz * 2, y); ctx.lineTo(x + sz * 0.5, y + sz * 0.5);
+    ctx.lineTo(x, y + sz * 2); ctx.lineTo(x - sz * 0.5, y + sz * 0.5);
+    ctx.lineTo(x - sz * 2, y); ctx.lineTo(x - sz * 0.5, y - sz * 0.5);
+    ctx.closePath();
+    ctx.fill();
+  });
+}
+
+function download(id, filename) {
+  const a = document.createElement('a');
+  a.download = filename;
+  a.href = document.getElementById(id).toDataURL('image/png');
+  a.click();
+}
+
+drawIcon(document.getElementById('c192'));
+drawIcon(document.getElementById('c512'));
+</script>
+</body>
+</html>
